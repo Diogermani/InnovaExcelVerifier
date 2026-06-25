@@ -1,0 +1,10 @@
+{
+  "companyDomain": "@aatb.com.br",
+  "supportedExtensions": [".xlsx", ".xlsm"],
+  "startColumn": "M",
+  "language": "pt-BR",
+  "validateAllRecipients": true,
+  "validateHiddenSheets": true,
+  "allowUserOverride": true,
+  "ignoreZipFiles": true
+}

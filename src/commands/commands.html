@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>Innova Excel Verifier - Commands</title>
+    <!--
+      Script load order (all synchronous to guarantee correct sequencing):
+      1. office.js  — required explicitly in browser runtime (Outlook Web / new Outlook on Windows)
+      2. xlsx.mini  — SheetJS minimal build (~200 KB vs ~1.5 MB full).
+                      Loaded from CDN (not bundled) so launchevent.js stays ~6 KB.
+                      Must be BEFORE launchevent.js so window.XLSX is defined.
+      3. launchevent.js — injected by webpack with <script defer>
+                          (defer = runs after HTML parsed, after sync scripts above are done)
+    -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+    <script type="text/javascript" src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.mini.min.js"></script>
+  </head>
+  <body>
+    <!-- Browser runtime host for event-based activation.
+         Used by Outlook on the Web and new Outlook on Windows.
+         launchevent.js is injected automatically by webpack as <script defer>. -->
+  </body>
+</html>

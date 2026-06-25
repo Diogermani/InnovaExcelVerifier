@@ -1,0 +1,31 @@
+{
+  "name": "innova-excel-verifier",
+  "version": "1.0.0",
+  "description": "Outlook Add-in corporativo para validação de anexos Excel",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "core-js": "^3.36.0",
+    "regenerator-runtime": "^0.14.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/office-js": "^1.0.390",
+    "@types/office-runtime": "^1.0.34",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^6.10.0",
+    "html-webpack-plugin": "^5.6.0",
+    "jest": "^29.7.0",
+    "style-loader": "^3.3.4",
+    "ts-jest": "^29.1.2",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  }
+}
