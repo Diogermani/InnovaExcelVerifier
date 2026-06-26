@@ -2,6 +2,7 @@ export interface AppConfig {
   companyDomain: string;
   supportedExtensions: string[];
   startColumn: string;
+  sheetStartColumns?: Record<string, string>;
   language: string;
   validateAllRecipients: boolean;
   validateHiddenSheets: boolean;
@@ -13,6 +14,11 @@ export const DEFAULT_CONFIG: AppConfig = {
   companyDomain: "@aatb.com.br",
   supportedExtensions: [".xlsx", ".xlsm"],
   startColumn: "M",
+  sheetStartColumns: {
+    "Resumo": "H",
+    "Cronograma": "RR",
+    "grade": "O"
+  },
   language: "pt-BR",
   validateAllRecipients: true,
   validateHiddenSheets: true,

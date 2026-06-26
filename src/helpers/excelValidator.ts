@@ -81,8 +81,13 @@ export function validateExcelWorkbook(
     // xlsxReader.read will throw errors if the file is encrypted/password protected or corrupted.
     const workbook = xlsxReader.read(base64Content, { type: "base64", cellFormula: true });
     
-    // Resolve start column to numerical index
-    const startColIndex = XLSX.utils.decode_col(config.startColumn);
+    // Check if the workbook has a "RESUMO" sheet (case-insensitive)
+    const hasResumoSheet = workbook.SheetNames.some(
+      (name) => name.toLowerCase() === "resumo"
+    );
+    if (!hasResumoSheet) {
+      return result; // Treat as authorized, skip column checks
+    }
 
     for (const sheetName of workbook.SheetNames) {
       const visibility = getSheetVisibility(workbook, sheetName);
@@ -97,6 +102,23 @@ export function validateExcelWorkbook(
       if (!sheet) {
         continue;
       }
+
+      // Determine start column for this sheet (fallback to config.startColumn)
+      let startCol = config.startColumn;
+      if (config.sheetStartColumns) {
+        if (config.sheetStartColumns[sheetName] !== undefined) {
+          startCol = config.sheetStartColumns[sheetName];
+        } else {
+          const lowerSheet = sheetName.toLowerCase();
+          const matchKey = Object.keys(config.sheetStartColumns).find(
+            (k) => k.toLowerCase() === lowerSheet
+          );
+          if (matchKey) {
+            startCol = config.sheetStartColumns[matchKey];
+          }
+        }
+      }
+      const startColIndex = XLSX.utils.decode_col(startCol);
 
       let firstProblemCell: string | undefined = undefined;
 

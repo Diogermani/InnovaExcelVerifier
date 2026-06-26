@@ -66,7 +66,7 @@ describe("validateExcelWorkbook", () => {
     // Let's populate columns A to L (indices 0 to 11)
     const row: string[] = Array(12).fill("ok"); 
     const base64 = createMockWorkbookBase64({
-      "Planilha1": [row]
+      "RESUMO": [row]
     });
 
     const result = validateExcelWorkbook(base64, "teste_ok.xlsx", mockConfig);
@@ -80,13 +80,13 @@ describe("validateExcelWorkbook", () => {
     const row: any[] = Array(12).fill("");
     row.push("violation"); // Column index 12 (M)
     const base64 = createMockWorkbookBase64({
-      "Planilha1": [row]
+      "RESUMO": [row]
     });
 
     const result = validateExcelWorkbook(base64, "teste_m_fail.xlsx", mockConfig);
     expect(result.hasProblem).toBe(true);
     expect(result.problemSheets.length).toBe(1);
-    expect(result.problemSheets[0].sheetName).toBe("Planilha1");
+    expect(result.problemSheets[0].sheetName).toBe("RESUMO");
     expect(result.problemSheets[0].firstProblemCell).toBe("M1");
   });
 
@@ -95,13 +95,13 @@ describe("validateExcelWorkbook", () => {
     const row: any[] = Array(25).fill("");
     row.push(999); // Column index 25 (Z)
     const base64 = createMockWorkbookBase64({
-      "Planilha1": [row]
+      "RESUMO": [row]
     });
 
     const result = validateExcelWorkbook(base64, "teste_z_fail.xlsx", mockConfig);
     expect(result.hasProblem).toBe(true);
     expect(result.problemSheets.length).toBe(1);
-    expect(result.problemSheets[0].sheetName).toBe("Planilha1");
+    expect(result.problemSheets[0].sheetName).toBe("RESUMO");
     expect(result.problemSheets[0].firstProblemCell).toBe("Z1");
   });
 
@@ -111,7 +111,7 @@ describe("validateExcelWorkbook", () => {
     rowFail.push("bad"); // column M
     
     const base64 = createMockWorkbookBase64({
-      "Aba1": [rowOk],
+      "RESUMO": [rowOk],
       "Aba2": [rowFail],
       "Aba3": [rowOk]
     });
@@ -127,7 +127,7 @@ describe("validateExcelWorkbook", () => {
     rowFail.push("bad"); // column M
 
     const base64 = createMockWorkbookBase64({
-      "Visivel": [["ok"]],
+      "RESUMO": [["ok"]],
       "Oculta": [rowFail]
     }, ["Oculta"]);
 
@@ -164,6 +164,100 @@ describe("validateExcelWorkbook", () => {
     expect(result.error?.code).toBe("PASSWORD_PROTECTED");
 
     readSpy.mockRestore();
+  });
+
+  test("should skip validation if RESUMO sheet is not present (even if content is in column M)", () => {
+    // No sheet named RESUMO
+    const rowFail: any[] = Array(12).fill("");
+    rowFail.push("bad"); // column M
+    const base64 = createMockWorkbookBase64({
+      "Plan1": [rowFail]
+    });
+
+    const result = validateExcelWorkbook(base64, "no_resumo.xlsx", mockConfig);
+    expect(result.hasProblem).toBe(false);
+    expect(result.problemSheets.length).toBe(0);
+  });
+
+  test("should run validation normally if RESUMO sheet is present", () => {
+    // Sheet named RESUMO (uppercase)
+    const rowFail: any[] = Array(12).fill("");
+    rowFail.push("bad"); // column M
+    const base64 = createMockWorkbookBase64({
+      "RESUMO": [rowFail]
+    });
+
+    const result = validateExcelWorkbook(base64, "has_resumo_upper.xlsx", mockConfig);
+    expect(result.hasProblem).toBe(true);
+    expect(result.problemSheets.length).toBe(1);
+    expect(result.problemSheets[0].sheetName).toBe("RESUMO");
+  });
+
+  test("should run validation normally if resumo sheet is present case-insensitively", () => {
+    // Sheet named resumo (lowercase)
+    const rowFail: any[] = Array(12).fill("");
+    rowFail.push("bad"); // column M
+    const base64 = createMockWorkbookBase64({
+      "resumo": [rowFail]
+    });
+
+    const result = validateExcelWorkbook(base64, "has_resumo_lower.xlsx", mockConfig);
+    expect(result.hasProblem).toBe(true);
+    expect(result.problemSheets.length).toBe(1);
+    expect(result.problemSheets[0].sheetName).toBe("resumo");
+  });
+
+  test("should respect sheet-specific column overrides (e.g. Resumo startColumn = H)", () => {
+    // Resumo startColumn is H (index 7).
+    // Let's populate columns A to G (indices 0 to 6) -> no problem.
+    // Populate column H (index 7) -> should fail.
+    const rowOk: any[] = Array(7).fill("ok");
+    const rowFail: any[] = Array(7).fill("");
+    rowFail.push("fail_at_H"); // Column H is index 7
+
+    const configWithOverrides: AppConfig = {
+      ...mockConfig,
+      sheetStartColumns: {
+        "Resumo": "H"
+      }
+    };
+
+    // Test sheet-specific override success (data ends at G, column index 6)
+    const base64Ok = createMockWorkbookBase64({
+      "Resumo": [rowOk]
+    });
+    const resultOk = validateExcelWorkbook(base64Ok, "resumo_ok.xlsx", configWithOverrides);
+    expect(resultOk.hasProblem).toBe(false);
+
+    // Test sheet-specific override failure (data in H, column index 7)
+    const base64Fail = createMockWorkbookBase64({
+      "Resumo": [rowFail]
+    });
+    const resultFail = validateExcelWorkbook(base64Fail, "resumo_fail.xlsx", configWithOverrides);
+    expect(resultFail.hasProblem).toBe(true);
+    expect(resultFail.problemSheets[0].sheetName).toBe("Resumo");
+    expect(resultFail.problemSheets[0].firstProblemCell).toBe("H1");
+  });
+
+  test("should respect sheet-specific column overrides case-insensitively", () => {
+    const rowFail: any[] = Array(7).fill("");
+    rowFail.push("fail_at_H"); // Column H
+
+    const configWithOverrides: AppConfig = {
+      ...mockConfig,
+      sheetStartColumns: {
+        "resumo": "H" // Config key is lowercase
+      }
+    };
+
+    const base64 = createMockWorkbookBase64({
+      "RESUMO": [rowFail] // Sheet name is uppercase
+    });
+
+    const result = validateExcelWorkbook(base64, "resumo_case.xlsx", configWithOverrides);
+    expect(result.hasProblem).toBe(true);
+    expect(result.problemSheets[0].sheetName).toBe("RESUMO");
+    expect(result.problemSheets[0].firstProblemCell).toBe("H1");
   });
 });
 

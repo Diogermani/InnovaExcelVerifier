@@ -1,6 +1,7 @@
 import { getConfig } from "../config/configService";
 import { getExcelAttachments, getAttachmentContentAsync } from "../helpers/attachmentHelper";
 import { validateExcelWorkbook, summarizeValidation, AttachmentValidationResult, ValidationSummary } from "../helpers/excelValidator";
+import { getRecipientEmails, hasExternalRecipients } from "../helpers/recipientHelper";
 
 // ─── Diagnostic helper ───────────────────────────────────────────────────────
 
@@ -45,8 +46,15 @@ function notifyError(key: string, message: string): void {
 
 // ─── Message formatter ────────────────────────────────────────────────────────
 
-export function formatAlertMessage(summary: ValidationSummary): string {
+export function formatAlertMessage(summary: ValidationSummary, hasExternalRecipients: boolean): string {
   const parts: string[] = [];
+
+  if (hasExternalRecipients && summary.problematicFiles.length > 0) {
+    parts.push("🛑🛑🛑 BLOQUEIO DE SEGURANÇA (E-MAIL EXTERNO) 🛑🛑🛑");
+    parts.push("==================================================");
+    parts.push("ATENÇÃO CRÍTICA: Você está tentando enviar e-mail para destinatários EXTERNOS (fora da AATB) contendo dados potencialmente confidenciais nas colunas ocultas/restritas do Excel!");
+    parts.push("==================================================\n");
+  }
 
   if (summary.problematicFiles.length > 0) {
     if (summary.problematicFiles.length === 1) {
@@ -78,7 +86,11 @@ export function formatAlertMessage(summary: ValidationSummary): string {
     }
   }
 
-  parts.push("\nVerifique se essas informações podem ser enviadas antes de continuar.");
+  if (hasExternalRecipients && summary.problematicFiles.length > 0) {
+    parts.push("\nPor motivos de segurança da informação, o envio foi BLOQUEADO. Remova os dados confidenciais ou ajuste os destinatários antes de tentar enviar novamente.");
+  } else {
+    parts.push("\nVerifique se essas informações podem ser enviadas antes de continuar.");
+  }
   return parts.join("\n");
 }
 
@@ -105,6 +117,21 @@ export async function onMessageSendHandler(event: Office.MailboxEvent): Promise<
       notify("diag", "✅ Innova Verifier: sem anexos Excel — enviando.");
       event.completed({ allowEvent: true });
       return;
+    }
+
+    // 2.1 Check if there are external recipients
+    log("Checking recipients");
+    notify("diag", "⏳ Innova Verifier: analisando destinatários...");
+    let externalRecipientsFound = false;
+    try {
+      const item = Office.context?.mailbox?.item;
+      const emails = await getRecipientEmails(item);
+      log("Recipients fetched", `count=${emails.length}`);
+      externalRecipientsFound = hasExternalRecipients(emails, config.companyDomain);
+      log("External recipients check", `found=${externalRecipientsFound}`);
+    } catch (recipError: any) {
+      log("Error checking recipients, defaulting to true to be safe", recipError.message);
+      externalRecipientsFound = true; // Fallback to safe mode
     }
 
     // 3. Download and validate each file
@@ -142,7 +169,7 @@ export async function onMessageSendHandler(event: Office.MailboxEvent): Promise<
 
     // 4. Decide outcome
     if (summary.hasProblems) {
-      const alertMsg = formatAlertMessage(summary);
+      const alertMsg = formatAlertMessage(summary, externalRecipientsFound);
       log("BLOCKING SEND — problems found");
       event.completed({ allowEvent: false, errorMessage: alertMsg });
     } else {

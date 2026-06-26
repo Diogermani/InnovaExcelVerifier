@@ -1,7 +1,15 @@
 {
   "companyDomain": "@aatb.com.br",
-  "supportedExtensions": [".xlsx", ".xlsm"],
+  "supportedExtensions": [
+    ".xlsx",
+    ".xlsm"
+  ],
   "startColumn": "M",
+  "sheetStartColumns": {
+    "Resumo": "H",
+    "Cronograma": "RR",
+    "grade": "O"
+  },
   "language": "pt-BR",
   "validateAllRecipients": true,
   "validateHiddenSheets": true,

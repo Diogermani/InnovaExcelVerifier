@@ -8,18 +8,18 @@
 
   <Id>ef83cd26-846d-44b8-9893-c5b2dd2d4f07</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>INNOVA AATB v1.2</ProviderName>
+  <ProviderName>INNOVA AATB v1.3</ProviderName>
   <DefaultLocale>pt-BR</DefaultLocale>
   <DisplayName DefaultValue="Innova Excel Verifier"/>
   <Description DefaultValue="Validador automatico de anexos Excel antes do envio de e-mails."/>
 
-  <IconUrl DefaultValue="https://agenda.aatb.com.br/excelvalidator/assets/icon-64.png"/>
-  <HighResolutionIconUrl DefaultValue="https://agenda.aatb.com.br/excelvalidator/assets/icon-128.png"/>
+  <IconUrl DefaultValue="https://tools.aatb.com.br/excelverifier/assets/icon-64.png"/>
+  <HighResolutionIconUrl DefaultValue="https://tools.aatb.com.br/excelverifier/assets/icon-128.png"/>
 
-  <SupportUrl DefaultValue="https://agenda.aatb.com.br/excelvalidator/taskpane.html"/>
+  <SupportUrl DefaultValue="https://tools.aatb.com.br/excelverifier/taskpane.html"/>
 
   <AppDomains>
-    <AppDomain>https://agenda.aatb.com.br</AppDomain>
+    <AppDomain>https://tools.aatb.com.br</AppDomain>
   </AppDomains>
 
   <Hosts>
@@ -35,7 +35,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://agenda.aatb.com.br/excelvalidator/taskpane.html"/>
+        <SourceLocation DefaultValue="https://tools.aatb.com.br/excelverifier/taskpane.html"/>
         <RequestedHeight>250</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -104,16 +104,16 @@
       </Hosts>
       <Resources>
         <bt:Images>
-          <bt:Image id="Icon.16x16" DefaultValue="https://agenda.aatb.com.br/excelvalidator/assets/icon-16.png"/>
-          <bt:Image id="Icon.32x32" DefaultValue="https://agenda.aatb.com.br/excelvalidator/assets/icon-32.png"/>
-          <bt:Image id="Icon.80x80" DefaultValue="https://agenda.aatb.com.br/excelvalidator/assets/icon-80.png"/>
+          <bt:Image id="Icon.16x16" DefaultValue="https://tools.aatb.com.br/excelverifier/assets/icon-16.png"/>
+          <bt:Image id="Icon.32x32" DefaultValue="https://tools.aatb.com.br/excelverifier/assets/icon-32.png"/>
+          <bt:Image id="Icon.80x80" DefaultValue="https://tools.aatb.com.br/excelverifier/assets/icon-80.png"/>
         </bt:Images>
         <bt:Urls>
-          <bt:Url id="Commands.Url" DefaultValue="https://agenda.aatb.com.br/excelvalidator/commands.html"/>
-          <bt:Url id="Taskpane.Url" DefaultValue="https://agenda.aatb.com.br/excelvalidator/taskpane.html"/>
-          <bt:Url id="WebViewRuntime.Url" DefaultValue="https://agenda.aatb.com.br/excelvalidator/commands.html"/>
+          <bt:Url id="Commands.Url" DefaultValue="https://tools.aatb.com.br/excelverifier/commands.html"/>
+          <bt:Url id="Taskpane.Url" DefaultValue="https://tools.aatb.com.br/excelverifier/taskpane.html"/>
+          <bt:Url id="WebViewRuntime.Url" DefaultValue="https://tools.aatb.com.br/excelverifier/commands.html"/>
           <!-- Entry needed for classic Outlook on Windows. -->
-          <bt:Url id="JSRuntime.Url" DefaultValue="https://agenda.aatb.com.br/excelvalidator/launchevent.js"/>
+          <bt:Url id="JSRuntime.Url" DefaultValue="https://tools.aatb.com.br/excelverifier/launchevent.js"/>
         </bt:Urls>
         <bt:ShortStrings>
           <bt:String id="GroupLabel" DefaultValue="Innova"/>

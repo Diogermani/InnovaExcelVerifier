@@ -1,0 +1,35 @@
+# Dependências
+node_modules/
+
+# Build gerado pelo Webpack
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache e temp
+.cache/
+.tmp/
+*.log
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+
+# Editores e IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Testes locais
+testes/
+
